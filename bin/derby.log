@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Fri Apr 28 00:01:31 ART 2023:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-0187-c5cf-0578-000001a851d0 
+on database directory C:\Users\gusta\Desktop\TUDAI2023\tp2piola\exampleDBJPA with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@22d8cfe0 
+Loaded from file:/C:/Users/gusta/.m2/repository/org/apache/derby/derby/10.15.2.0/derby-10.15.2.0.jar
+java.vendor=Eclipse Adoptium
+java.runtime.version=17.0.6+10
+user.dir=C:\Users\gusta\Desktop\TUDAI2023\tp2piola
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

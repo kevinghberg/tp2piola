@@ -49,6 +49,8 @@ public class Main {
 		for (Estudiante e : le) {
 			System.out.println(e.getNombres() + e.getApellido());
 		}
+		
+		System.out.println(cr.obtenerCarreraPorNombre("TUPAR"));
 
 		/*
 		 * Carrera_Estudiante ce = new Carrera_Estudiante(ct,e1,true,LocalDate.now());

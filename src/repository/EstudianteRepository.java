@@ -48,11 +48,12 @@ public class EstudianteRepository extends Repository {
 		em.getTransaction().commit();
 		return allQuery.getResultList();
 	}
-	
+
 	public void borrarEstudiante(int id) {
 		em.getTransaction().begin();
 		Estudiante e = em.find(Estudiante.class, id);
-		em.remove(e);
+		if (e != null)
+			em.remove(e);
 		em.getTransaction().commit();
 	}
 
