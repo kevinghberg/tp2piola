@@ -12,12 +12,12 @@ public class Carrera_Estudiante {
 
 	@ManyToOne
 	@MapsId("idEstudiante")
-	@JoinColumn(name = "id_estudiante")
+	@JoinColumn(name = "idEstudiante")
 	private Estudiante estudiante;
 
 	@ManyToOne
 	@MapsId("idCarrera")
-	@JoinColumn(name = "id_carrera")
+	@JoinColumn(name = "idCarrera")
 	private Carrera carrera;
 
 	public boolean graduado = false;

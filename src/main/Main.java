@@ -2,16 +2,19 @@ package main;
 
 import factory.FactoryEntityManager;
 import repository.CarreraRepository;
+import repository.Carrera_Estudiante_Repository;
 import repository.EstudianteRepository;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 import javax.persistence.*;
 
+import dto.CarreraInscriptosDTO;
+import dto.ReporteDTO;
 import entidades.*;
 
-@SuppressWarnings("unused")
 public class Main {
 
 	public static void main(String[] args) {
@@ -20,43 +23,44 @@ public class Main {
 
 		CarreraRepository cr = fem.getCarreraRepository();
 		EstudianteRepository er = fem.getEstudianteRepository();
-
-		er.agregarEstudiante("Nicolas", "Angiolini", 27, 'M', 39000000, "Necochea", 100);
-		er.agregarEstudiante("Cecilia", "Barenbaum", 28, 'F', 18472306, "Mar Del Plata", 101);
-		er.agregarEstudiante("Kevin", "Garces", 25, 'M', 39500000, "Necochea", 102);
+		Carrera_Estudiante_Repository cer = fem.getCarreraEstudianteRepository();
 
 		cr.agregarCarrera("TUDAI");
 		cr.agregarCarrera("TUPAR");
 
-		Carrera ct = cr.obtenerCarreraPorId(1);
+		// a) dar de alta un estudiante
+		er.agregarEstudiante("Nicolas", "Angiolini", 27, 'M', 39000000, "Necochea", 100);
+		er.agregarEstudiante("Cecilia", "Barenbaum", 28, 'F', 18472306, "Mar Del Plata", 101);
+		er.agregarEstudiante("Kevin", "Garces", 25, 'M', 39500000, "Necochea", 102);
 
-		List<Carrera> lc = cr.findAll();
+		// b) matricular un estudiante en una carrera
+		Estudiante e1 = er.obtenerEstudiantePorId(1);
+		Estudiante e2 = er.obtenerEstudiantePorId(2);
+		Estudiante e3 = er.obtenerEstudiantePorId(3);
 
-		for (Carrera c : lc) {
-			System.out.println(c.getNombre());
-		}
+		Carrera c1 = cr.obtenerCarreraPorId(1);
+		Carrera c2 = cr.obtenerCarreraPorId(2);
 
-		List<Estudiante> le = er.findAll();
+		cer.agregarRelacionEstudianteCarrera(c1, e1, true, LocalDate.now().minus(Period.ofDays(1)));
+		cer.agregarRelacionEstudianteCarrera(c1, e2, false, LocalDate.now().minus(Period.ofDays(2)));
+		cer.agregarRelacionEstudianteCarrera(c1, e3, false, LocalDate.now().minus(Period.ofDays(1)));
 
-		for (Estudiante e : le) {
-			System.out.println(e.getNombres() + e.getApellido());
-		}
+		cer.agregarRelacionEstudianteCarrera(c2, e2, false, LocalDate.now().minus(Period.ofDays(1)));
 
-		er.borrarEstudiante(2);
+		// c) recuperar todos los estudiantes, y especificar algún criterio de
+		// ordenamiento simple.
+		List<Estudiante> listaOrdenada = er.buscarTodosEstudiantesOrdenado("DESC");
 
-		le = er.findAll();
+		// d) recuperar un estudiante, en base a su número de libreta universitaria.
+		Estudiante e4 = er.buscarPorNumeroLibreta(100);
 
-		for (Estudiante e : le) {
-			System.out.println(e.getNombres() + e.getApellido());
-		}
-		
-		System.out.println(cr.obtenerCarreraPorNombre("TUPAR"));
+		// e) recuperar todos los estudiantes, en base a su género.
+		List<Estudiante> le = er.buscarEstudiantePorGenero('M');
 
-		/*
-		 * Carrera_Estudiante ce = new Carrera_Estudiante(ct,e1,true,LocalDate.now());
-		 * 
-		 * cr.agregarEstudianteACarrera(1,1);
-		 */
+		// f) recuperar las carreras con estudiantes inscriptos, y ordenar por cantidad
+		// de inscriptos.
+
+		List<CarreraInscriptosDTO> lci = cr.buscarCarrerasConEstudiantesOrdenadoPorCantidad();
 
 		cr.cerrarRepository();
 

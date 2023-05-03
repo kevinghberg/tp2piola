@@ -3,6 +3,7 @@ package repository;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,9 +18,7 @@ public class EstudianteRepository extends Repository {
 	}
 
 	public Estudiante obtenerEstudiantePorId(int id) {
-		em.getTransaction().begin();
 		Estudiante c = em.find(Estudiante.class, id);
-		em.getTransaction().commit();
 		return c;
 	}
 
@@ -39,13 +38,42 @@ public class EstudianteRepository extends Repository {
 	}
 
 	public List<Estudiante> findAll() {
-		em.getTransaction().begin();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Estudiante> cq = cb.createQuery(Estudiante.class);
 		Root<Estudiante> rootEntry = cq.from(Estudiante.class);
 		CriteriaQuery<Estudiante> all = cq.select(rootEntry);
 		TypedQuery<Estudiante> allQuery = em.createQuery(all);
-		em.getTransaction().commit();
+		return allQuery.getResultList();
+	}
+
+	public List<Estudiante> buscarTodosEstudiantesOrdenado(String orden) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Estudiante> q = cb.createQuery(Estudiante.class);
+		Root<Estudiante> c = q.from(Estudiante.class);
+		q.select(c);
+		if (orden == "ASC" || orden == "asc")
+			q.orderBy(cb.asc(c.get("nombres")));
+		else
+			q.orderBy(cb.desc(c.get("nombres")));
+		TypedQuery<Estudiante> allQuery = em.createQuery(q);
+		return allQuery.getResultList();
+	}
+
+	public Estudiante buscarPorNumeroLibreta(int numLibreta) {
+		Query query = em.createQuery("Select e FROM Estudiante e WHERE e.numLibreta = :numLibreta");
+		query.setParameter("numLibreta", numLibreta);
+		return (Estudiante) query.getSingleResult();
+	}
+	
+	
+
+	public List<Estudiante> buscarEstudiantePorGenero(char genero) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Estudiante> q = cb.createQuery(Estudiante.class);
+		Root<Estudiante> c = q.from(Estudiante.class);
+		q.select(c);
+		q.where(cb.equal(c.get("genero"), genero));
+		TypedQuery<Estudiante> allQuery = em.createQuery(q);
 		return allQuery.getResultList();
 	}
 

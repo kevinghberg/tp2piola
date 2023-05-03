@@ -9,10 +9,8 @@ import javax.persistence.*;
 @Embeddable
 public class CarreraEstudiantePK implements Serializable{
 
-	@Column(name="id_estudiante")
 	private int idEstudiante;
 	
-	@Column(name="id_carrera")
 	private int idCarrera;
 	
 	public CarreraEstudiantePK(int idEstudiante, int idCarrera) {

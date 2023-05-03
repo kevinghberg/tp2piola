@@ -1,5 +1,6 @@
 package repository;
 
+import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.*;
@@ -7,7 +8,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import dto.CarreraInscriptosDTO;
+import dto.ReporteDTO;
 import entidades.Carrera;
+import entidades.Estudiante;
 
 public class CarreraRepository extends Repository {
 	public CarreraRepository(EntityManager em) {
@@ -41,27 +45,41 @@ public class CarreraRepository extends Repository {
 	}
 
 	public void borrarCarrera(int id) {
-		this.getClass();
 		em.getTransaction().begin();
 		Carrera c = em.find(Carrera.class, id);
 		if (c != null)
 			em.remove(c);
 		em.getTransaction().commit();
 	}
-
-	public Carrera obtenerCarreraPorNombre(final String nombre) {
-		em.getTransaction().begin();
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Carrera> cq = cb.createQuery(Carrera.class);
-		Root<Carrera> root = cq.from(Carrera.class);
-		cq.select(root);
-		cq.where(cb.equal(root.as(Carrera.class), nombre));
-		TypedQuery<Carrera> typed = em.createQuery(cq);
-		try {
-			return typed.getSingleResult();
-		} catch (final NoResultException nre) {
-			return null;
-		}
+	
+	
+	public List<CarreraInscriptosDTO> buscarCarrerasConEstudiantesOrdenadoPorCantidad(){
+		Query query = em.createQuery("SELECT NEW dto.CarreraInscriptosDTO(cc.nombre, ( "
+				+ "  SELECT COUNT(e.idEstudiante) "
+				+ "  FROM Carrera_Estudiante ce "
+				+ "  JOIN ce.estudiante e "
+				+ "  WHERE ce.carrera.idCarrera = cc.idCarrera)) "
+				+ "FROM Carrera cc ");
+		List<CarreraInscriptosDTO> dtos =  query.getResultList();
+		dtos.sort(Comparator.comparing(CarreraInscriptosDTO::getCantidadInscriptos));
+		return dtos;
+	}
+	
+	public List<ReporteDTO> buscarCarrerasConReporteDTO(){
+		//TODO NO FUNCIONA
+		Query query = em.createQuery("SELECT NEW dto.ReporteDTO(cc.nombre, ce2.fechaIngreso, ( "
+				+ " SELECT COUNT(e.idEstudiante) "
+				+ " FROM Carrera_Estudiante ce "
+				+ " JOIN ce.estudiante e "
+				+ " WHERE ce.graduado = false "
+				+ " AND ce.carrera = cc "
+				+ " AND ce.fechaIngreso = ce.fechaIngreso)) "
+				+ " FROM Carrera cc "
+				+ " JOIN Carrera_Estudiante ce2 "
+				+ " WHERE ce2.graduado = false "
+				+ " GROUP BY cc.nombre, ce2.fechaIngreso ");
+		List<ReporteDTO> dtos =  query.getResultList();
+		return dtos;
 	}
 
 }
